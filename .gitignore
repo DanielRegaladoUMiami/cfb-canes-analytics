@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project data — captured locally, never committed (see CLAUDE.md)
+data/raw/
+data/interim/
+data/processed/
+*.parquet
+!tests/fixtures/*.parquet
+.ruff_cache/
