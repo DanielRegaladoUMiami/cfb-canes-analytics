@@ -31,7 +31,12 @@ logger = logging.getLogger(__name__)
 
 MINUTE_WINDOW = timedelta(hours=8)
 PAD = timedelta(minutes=5)
-BATCH = 50
+
+#: Markets per flush. Each flush rewrites the whole parquet file (an upsert, so the job
+#: stays idempotent and resumable), and the candle tables run to millions of rows, so a
+#: small batch means quadratic I/O. 250 keeps at most a few minutes of work at risk.
+MARKET_BATCH = 50
+CANDLE_BATCH = 250
 
 
 def event_row(raw: dict[str, Any], status: str | None = None) -> dict[str, Any]:
@@ -91,7 +96,7 @@ def harvest_markets(client: KalshiClient, base: Path) -> int:
             )
         rows.extend(market_row(m) for m in markets)
         fetched += len(markets)
-        if i % BATCH == 0 or i == len(todo):
+        if i % MARKET_BATCH == 0 or i == len(todo):
             upsert_parquet(markets_path, rows, ["ticker"])
             logger.info("markets: %d/%d events, %d markets", i, len(todo), fetched)
             rows = []
@@ -145,7 +150,7 @@ def harvest_candles(
             }
         )
         total += len(bars)
-        if i % BATCH == 0 or i == len(todo):
+        if i % CANDLE_BATCH == 0 or i == len(todo):
             upsert_parquet(candles_path, rows, ["ticker", "interval", "end_ts"])
             upsert_parquet(log_path, log_rows, ["ticker", "interval"])
             logger.info("candles[%d]: %d/%d markets, %d bars", interval, i, len(todo), total)
