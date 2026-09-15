@@ -1,4 +1,11 @@
-"""Parquet storage under ``data/`` (gitignored). Small, boring, idempotent."""
+"""Parquet storage under ``data/`` (gitignored). Small, boring, idempotent.
+
+Every frame is built with ``infer_schema_length=None``. Polars otherwise infers column
+types from the first 100 rows, and several fields here are null for long runs before a
+value appears — ESPN only attaches an odds provider to a handful of games per week, so a
+naive build raises ``ComputeError: could not append value: "DraftKings"`` once the first
+non-null row arrives.
+"""
 
 from __future__ import annotations
 
@@ -22,6 +29,10 @@ def read_or_none(path: Path) -> pl.DataFrame | None:
     return pl.read_parquet(path) if path.exists() else None
 
 
+def _frame(rows: Iterable[dict[str, Any]]) -> pl.DataFrame:
+    return pl.DataFrame(list(rows), infer_schema_length=None)
+
+
 def _write_atomic(df: pl.DataFrame, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
@@ -31,7 +42,7 @@ def _write_atomic(df: pl.DataFrame, path: Path) -> None:
 
 def upsert_parquet(path: Path, rows: Iterable[dict[str, Any]], keys: list[str]) -> int:
     """Merge rows into ``path`` keeping the last row per key. Returns total row count."""
-    new = pl.DataFrame(list(rows))
+    new = _frame(rows)
     if new.is_empty():
         existing = read_or_none(path)
         return 0 if existing is None else existing.height
@@ -43,7 +54,7 @@ def upsert_parquet(path: Path, rows: Iterable[dict[str, Any]], keys: list[str]) 
 
 
 def append_parquet(path: Path, rows: Iterable[dict[str, Any]]) -> int:
-    new = pl.DataFrame(list(rows))
+    new = _frame(rows)
     if new.is_empty():
         existing = read_or_none(path)
         return 0 if existing is None else existing.height

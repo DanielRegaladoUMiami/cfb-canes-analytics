@@ -5,19 +5,21 @@
 Exchange prices are the only time-critical asset. Kalshi's rolling retention means
 anything not harvested is gone.
 
-- [ ] Kalshi client ported from mlb-canes-analytics (rate-limit aware, ladders, candles)
-- [ ] Harvest: every retained settled `KXNCAAFTOTAL` market → ladder + candlesticks
-- [ ] Snapshot: open ladders for the coming week, runnable any time (cron-friendly)
-- [ ] Polymarket client: per-game O/U markets + CLOB book/history
-- [ ] ESPN schedule + results by week (kickoff, venue, indoor, neutral, scores)
-- [ ] Game join table: ESPN game id ↔ Kalshi event ↔ Polymarket slug (alias table)
-- [ ] Parquet schema + integrity checks (ladder monotone, both venues, settlement = score)
+- [x] Kalshi client ported from mlb-canes-analytics (rate-limit aware, ladders, candles)
+- [x] Harvest: ladders for all 301 retained games (candlestick harvest still running)
+- [x] Snapshot: open ladders for the coming week, runnable any time (cron-friendly)
+- [x] Polymarket client: per-game O/U markets + CLOB book/history
+- [x] ESPN schedule + results by week (kickoff, venue, indoor, neutral, scores)
+- [x] Game join table: ESPN game id ↔ Kalshi event ↔ Polymarket event (300/301 matched)
+- [x] Parquet schema + integrity checks (`cfb check`: settlement, monotonicity, coverage)
+- [ ] Schedule the daily snapshot (cron / launchd) so no day is missed
 
 ## v0.2 — market baseline
 
-- [ ] Implied distribution from the ladder (monotone fit, interpolate median/mean total)
+- [x] Implied distribution from the ladder (monotone fit, interpolate median/mean total)
+- [x] Cross-venue gaps: Kalshi vs Polymarket on the same line — none found, see
+      `docs/experiments/2026-09-14-market-data-baseline.md`
 - [ ] Ladder calibration: is P(total > k) at T-60 honest across k?
-- [ ] Cross-venue gaps: Kalshi vs Polymarket vs sportsbook total on the same game
 - [ ] Metrics: CRPS of the implied distribution, log loss per strike
 
 ## v0.3 — features (as-of correct, via CFBD)
@@ -50,3 +52,6 @@ anything not harvested is gone.
 
 - Repo created 2026-09-14
 - Data landscape verified (Kalshi ladders, Polymarket O/U, ESPN, CFBD) — see CLAUDE.md
+- Settlement verified: 5,407 strike settlements agree with ESPN box scores, 0 disagree
+- Two data traps documented and handled: Kalshi placeholder quotes (0.08/0.92 on untraded
+  games) and Polymarket non-game-total O/U markets

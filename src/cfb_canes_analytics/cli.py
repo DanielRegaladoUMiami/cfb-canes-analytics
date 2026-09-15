@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 
 import polars as pl
 
+from . import checks as checks_mod
 from . import edges as edges_mod
 from . import harvest as harvest_mod
 from . import snapshot as snapshot_mod
@@ -113,6 +114,15 @@ def cmd_edges(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_check(args: argparse.Namespace) -> int:
+    results = checks_mod.run_all(data_dir())
+    for result in results:
+        print(result)
+        for example in result.examples:
+            print(f"    {example}")
+    return 0 if all(r.ok for r in results) else 1
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     base = data_dir()
     print(f"data dir: {base.resolve()}")
@@ -181,6 +191,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--min-oi", type=float, default=0.0, help="minimum Kalshi open interest")
     p.add_argument("--limit", type=int, default=25)
     p.set_defaults(func=cmd_edges)
+
+    p = sub.add_parser("check", help="integrity checks on the local data")
+    p.set_defaults(func=cmd_check)
 
     p = sub.add_parser("status", help="row counts and coverage of local data")
     p.set_defaults(func=cmd_status)

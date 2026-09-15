@@ -21,7 +21,9 @@ Behaviours verified empirically (2026-07-26 on MLB, re-checked 2026-09-14 on NCA
   reliable source. Away team first in both the ticker and the title.
 - Kalshi changed wording between seasons: 2025 events read ``"MIA at WAKE"`` /
   ``"... : Point Total"``, 2026 events read ``"MIA vs WAKE"`` / ``"... : Total Points"``.
-  Both separators must be accepted.
+  Both separators must be accepted, and ``vs`` must be tried first: a school name can
+  itself contain " at " ("University at Albany vs Buffalo"), so splitting on the first
+  " at " yields the nonsense pair ("University", "Albany vs Buffalo").
 - Totals markets carry ``floor_strike`` (e.g. 55.5 for "Over 55.5 points scored"); the
   market ticker suffix is the rounded strike (``-56``).
 """
@@ -58,10 +60,22 @@ _MONTHS = {
 _EVENT_TICKER = re.compile(
     r"^(?P<series>[A-Z0-9]+)-(?P<yy>\d{2})(?P<mon>[A-Z]{3})(?P<dd>\d{2})(?P<teams>[A-Z0-9-]+)$"
 )
-_SUB_TITLE = re.compile(
-    r"^(?P<away>\S+) (?:vs|at) (?P<home>\S+) \((?P<mon>[A-Za-z]{3}) (?P<day>\d{1,2})\)$"
-)
-_TITLE = re.compile(r"^(?P<away>.+?) (?:vs|at) (?P<home>.+?)(?::.*)?$")
+_SUB_TITLES = [
+    re.compile(
+        rf"^(?P<away>\S+) {sep} (?P<home>\S+) \((?P<mon>[A-Za-z]{{3}}) (?P<day>\d{{1,2}})\)$"
+    )
+    for sep in ("vs", "at")
+]
+_TITLES = [re.compile(rf"^(?P<away>.+?) {sep} (?P<home>.+?)(?::.*)?$") for sep in ("vs", "at")]
+
+
+def _first_match(patterns: list[re.Pattern[str]], text: str) -> re.Match[str] | None:
+    """Try each separator in order; ``vs`` wins over ``at`` (see module docstring)."""
+    for pattern in patterns:
+        if match := pattern.match(text):
+            return match
+    return None
+
 
 KalshiError = ApiError
 
@@ -125,9 +139,9 @@ class EventKey:
         sub_title = raw.get("sub_title") or ""
         title = raw.get("title") or ""
         away = home = away_name = home_name = None
-        if m := _SUB_TITLE.match(sub_title):
+        if m := _first_match(_SUB_TITLES, sub_title):
             away, home = m["away"], m["home"]
-        if m := _TITLE.match(title):
+        if m := _first_match(_TITLES, title):
             away_name, home_name = m["away"].strip(), m["home"].strip()
         return cls(
             event_ticker=ticker,

@@ -16,6 +16,9 @@ from ._http import RetryingClient
 
 SITE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/college-football"
 FBS_GROUP = 80
+FCS_GROUP = 81
+#: Kalshi lists FCS games too, and they settle the same way, so both groups are fetched.
+ALL_GROUPS = (FBS_GROUP, FCS_GROUP)
 REGULAR_SEASON = 2
 POSTSEASON = 3
 EASTERN = ZoneInfo("America/New_York")
