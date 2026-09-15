@@ -23,7 +23,13 @@ from pathlib import Path
 
 import polars as pl
 
-from .ladder import LadderPoint, implied_quantile, implied_survival, survival_at
+from .ladder import (
+    LadderPoint,
+    implied_quantile,
+    implied_survival,
+    is_quoted,
+    survival_at,
+)
 from .polymarket import GAME_TOTAL
 from .storage import raw_path, read_or_none
 
@@ -130,7 +136,10 @@ def build_rows(base: Path, *, min_open_interest: float = 0.0) -> list[CrossVenue
         if not surv:
             continue
         line = market["line"]
-        nearest = min(points, key=lambda p: abs(p.strike - line))
+        quoted = [p for p in points if is_quoted(p)]
+        if not quoted:
+            continue
+        nearest = min(quoted, key=lambda p: abs(p.strike - line))
         oi = nearest.open_interest or 0.0
         if oi < min_open_interest:
             continue

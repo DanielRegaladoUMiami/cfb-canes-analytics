@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .espn import EspnClient, Game
+from .espn import ALL_GROUPS, EspnClient, Game
 from .kalshi import TOTAL_SERIES, EventKey, KalshiClient
 from .polymarket import (
     PolymarketClient,
@@ -63,9 +63,10 @@ def snapshot_espn(
     """Upsert ESPN games for the given weeks (``None`` = current week). Returns them."""
     games: list[Game] = []
     for week in weeks or [None]:
-        shown, batch = client.scoreboard(year, week)
-        logger.info("espn: week %s -> %d games", shown, len(batch))
-        games.extend(batch)
+        for group in ALL_GROUPS:
+            shown, batch = client.scoreboard(year, week, group=group)
+            logger.info("espn: week %s group %d -> %d games", shown, group, len(batch))
+            games.extend(batch)
     n = upsert_parquet(
         raw_path("espn_games.parquet", base), [game_row(g) for g in games], ["game_id"]
     )

@@ -55,6 +55,33 @@ def test_real_ladder_fixture_is_sensible() -> None:
     assert 45 < median < 65  # Miami at Wake Forest was priced around 54-55
 
 
+def test_placeholder_quotes_are_not_prices() -> None:
+    """Kalshi shows 0.08/0.92 on every strike of an untraded game (verified 2026-09-14).
+
+    Their midpoints are all 0.50, which would imply every total is equally likely.
+    """
+    placeholder = [LadderPoint(36.5 + 3 * i, 0.08, 0.92) for i in range(19)]
+    assert implied_survival(placeholder) == []
+    assert prob_over(placeholder, 50.5) is None
+
+
+def test_real_strikes_survive_a_mostly_placeholder_ladder() -> None:
+    points = [LadderPoint(36.5 + 3 * i, 0.08, 0.92) for i in range(6)]
+    points += [
+        LadderPoint(54.5, 0.60, 0.62),
+        LadderPoint(55.5, 0.50, 0.52),
+        LadderPoint(56.5, 0.40, 0.42),
+    ]
+    surv = implied_survival(points)
+    assert [s for s, _ in surv] == [54.5, 55.5, 56.5]
+    assert implied_quantile(surv, 0.5) == pytest.approx(55.5, abs=0.2)
+
+
+def test_too_few_real_strikes_yields_no_distribution() -> None:
+    points = [LadderPoint(40.5, 0.08, 0.92), LadderPoint(50.5, 0.50, 0.52)]
+    assert implied_survival(points) == []
+
+
 def test_empty_ladder() -> None:
     assert implied_survival([]) == []
     assert prob_over([], 50) is None

@@ -6,6 +6,14 @@ monotonicity appear from stale quotes on illiquid strikes, so we pool-adjacent-v
 the sequence before interpolating. Beyond the first and last strike we assume S goes to
 1 and 0 linearly over ``TAIL_WIDTH`` points — a stated modelling choice, revisit once
 the ladder calibration study (v0.2) says otherwise.
+
+**A quote is not always a price.** On a game nobody is trading, Kalshi shows a
+placeholder book — verified 2026-09-14 on ``KXNCAAFTOTAL-26SEP19UTMMEM``, where 16 of 19
+strikes read exactly ``0.08 / 0.92`` with zero open interest. Those midpoints are all
+0.50, so reading them naively yields an "implied distribution" that says every total
+from 36 to 78 is a coin flip. Any strike whose spread exceeds ``MAX_SPREAD`` is
+therefore dropped before fitting, and a ladder with too few survivors has no implied
+distribution at all rather than a fictional one.
 """
 
 from __future__ import annotations
@@ -16,6 +24,14 @@ from dataclasses import dataclass
 from .kalshi import Market
 
 TAIL_WIDTH = 10.0
+
+#: Widest bid/ask that still counts as a real quote. Kalshi's placeholder book is
+#: 0.08/0.92 (a spread of 0.84); genuine quotes on traded strikes run 0.01-0.10, and
+#: thin-but-real ones up to about 0.20.
+MAX_SPREAD = 0.25
+
+#: Fewer usable strikes than this and the ladder cannot describe a distribution.
+MIN_USABLE_STRIKES = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,11 +86,34 @@ def pav_nonincreasing(values: Sequence[float]) -> list[float]:
     return out
 
 
+def is_quoted(point: LadderPoint, *, max_spread: float = MAX_SPREAD) -> bool:
+    """Whether this strike carries a real two-sided quote rather than a placeholder."""
+    spread = point.spread
+    return spread is not None and spread <= max_spread
+
+
+def usable_points(
+    points: Sequence[LadderPoint], *, max_spread: float = MAX_SPREAD
+) -> list[LadderPoint]:
+    return [p for p in points if is_quoted(p, max_spread=max_spread)]
+
+
 def implied_survival(
-    points: Sequence[LadderPoint], *, side: str = "mid"
+    points: Sequence[LadderPoint],
+    *,
+    side: str = "mid",
+    max_spread: float = MAX_SPREAD,
+    min_strikes: int = MIN_USABLE_STRIKES,
 ) -> list[tuple[float, float]]:
-    """Monotone (strike, P(total > strike)) pairs from ``mid``, ``bid`` or ``ask``."""
-    usable = [(p.strike, getattr(p, side)) for p in points if getattr(p, side) is not None]
+    """Monotone (strike, P(total > strike)) pairs from ``mid``, ``bid`` or ``ask``.
+
+    Returns an empty list when the ladder has too few genuinely quoted strikes — an
+    empty answer is correct, a fabricated distribution is not.
+    """
+    quoted = usable_points(points, max_spread=max_spread)
+    if len(quoted) < min_strikes:
+        return []
+    usable = [(p.strike, getattr(p, side)) for p in quoted if getattr(p, side) is not None]
     if not usable:
         return []
     strikes = [s for s, _ in usable]
@@ -139,7 +178,11 @@ def implied_mean(surv: Sequence[tuple[float, float]], *, tail_width: float = TAI
 
 
 def prob_over(
-    points: Sequence[LadderPoint], line: float, *, side: str = "mid", tail_width: float = TAIL_WIDTH
+    points: Sequence[LadderPoint],
+    line: float,
+    *,
+    side: str = "mid",
+    tail_width: float = TAIL_WIDTH,
 ) -> float | None:
     """Ladder-implied P(total > line) — comparable to a sportsbook/Polymarket O/U line."""
     surv = implied_survival(points, side=side)

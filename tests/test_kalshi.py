@@ -57,6 +57,20 @@ def test_event_key_accepts_2025_at_wording() -> None:
     assert key.away_name == "Miami (OH)" and key.home_name == "Fresno St."
 
 
+def test_event_key_prefers_vs_over_an_at_inside_a_school_name() -> None:
+    """ "University at Albany vs Buffalo" must not split on the school's own " at "."""
+    key = EventKey.from_event(
+        {
+            "event_ticker": "KXNCAAFTOTAL-26SEP03ALBBUFF",
+            "sub_title": "ALB vs BUFF (Sep 3)",
+            "title": "University at Albany vs Buffalo: Total Points",
+            "series_ticker": "KXNCAAFTOTAL",
+        }
+    )
+    assert key.away_name == "University at Albany"
+    assert key.home_name == "Buffalo"
+
+
 def test_parse_event_ticker_rejects_garbage() -> None:
     with pytest.raises(ValueError):
         parse_event_ticker("nope")
