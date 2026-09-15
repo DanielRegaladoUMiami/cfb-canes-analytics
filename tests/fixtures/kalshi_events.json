@@ -1,0 +1,136 @@
+{
+  "cursor": "CgYI2P271QYSG0tYTkNBQUZUT1RBTC0yNlNFUDE5Q0NBUkRFTA",
+  "events": [
+    {
+      "category": "Sports",
+      "collateral_return_type": "",
+      "event_ticker": "KXNCAAFTOTAL-26SEP17SYRPITT",
+      "exchange_index": 0,
+      "last_updated_ts": "2026-09-12T23:36:38.385967Z",
+      "mutually_exclusive": false,
+      "product_metadata": {
+        "competition": "NCAA Football",
+        "competition_scope": "Point Total"
+      },
+      "series_ticker": "KXNCAAFTOTAL",
+      "settlement_sources": [
+        {
+          "name": "ESPN",
+          "url": "https://www.espn.com"
+        },
+        {
+          "name": "Kalshi using information originating from the NCAA",
+          "url": "https://www.ncaa.com/sports/football/fbs"
+        }
+      ],
+      "strike_period": "",
+      "sub_title": "SYR vs PITT (Sep 17)",
+      "title": "Syracuse vs Pittsburgh: Total Points"
+    },
+    {
+      "category": "Sports",
+      "collateral_return_type": "",
+      "event_ticker": "KXNCAAFTOTAL-26SEP18MIAWAKE",
+      "exchange_index": 0,
+      "last_updated_ts": "2026-09-13T22:03:00.633814Z",
+      "mutually_exclusive": false,
+      "product_metadata": {
+        "competition": "NCAA Football",
+        "competition_scope": "Point Total"
+      },
+      "series_ticker": "KXNCAAFTOTAL",
+      "settlement_sources": [
+        {
+          "name": "ESPN",
+          "url": "https://www.espn.com"
+        },
+        {
+          "name": "Kalshi using information originating from the NCAA",
+          "url": "https://www.ncaa.com/sports/football/fbs"
+        }
+      ],
+      "strike_period": "",
+      "sub_title": "MIA vs WAKE (Sep 18)",
+      "title": "Miami (FL) vs Wake Forest: Total Points"
+    },
+    {
+      "category": "Sports",
+      "collateral_return_type": "",
+      "event_ticker": "KXNCAAFTOTAL-26SEP18HOUTTU",
+      "exchange_index": 0,
+      "last_updated_ts": "2026-09-13T22:03:04.04649Z",
+      "mutually_exclusive": false,
+      "product_metadata": {
+        "competition": "NCAA Football",
+        "competition_scope": "Point Total"
+      },
+      "series_ticker": "KXNCAAFTOTAL",
+      "settlement_sources": [
+        {
+          "name": "ESPN",
+          "url": "https://www.espn.com"
+        },
+        {
+          "name": "Kalshi using information originating from the NCAA",
+          "url": "https://www.ncaa.com/sports/football/fbs"
+        }
+      ],
+      "strike_period": "",
+      "sub_title": "HOU vs TTU (Sep 18)",
+      "title": "Houston vs Texas Tech: Total Points"
+    },
+    {
+      "category": "Sports",
+      "collateral_return_type": "",
+      "event_ticker": "KXNCAAFTOTAL-26SEP18PRSTORE",
+      "exchange_index": 0,
+      "last_updated_ts": "2026-09-14T16:04:31.924197Z",
+      "mutually_exclusive": false,
+      "product_metadata": {
+        "competition": "NCAA Football",
+        "competition_scope": "Point Total"
+      },
+      "series_ticker": "KXNCAAFTOTAL",
+      "settlement_sources": [
+        {
+          "name": "ESPN",
+          "url": "https://www.espn.com"
+        },
+        {
+          "name": "Kalshi using information originating from the NCAA",
+          "url": "https://www.ncaa.com/sports/football/fbs"
+        }
+      ],
+      "strike_period": "",
+      "sub_title": "PRST vs ORE (Sep 18)",
+      "title": "Portland St. vs Oregon: Total Points"
+    },
+    {
+      "category": "Sports",
+      "collateral_return_type": "",
+      "event_ticker": "KXNCAAFTOTAL-26SEP19CCARDEL",
+      "exchange_index": 0,
+      "last_updated_ts": "2026-09-13T22:03:04.912702Z",
+      "mutually_exclusive": false,
+      "product_metadata": {
+        "competition": "NCAA Football",
+        "competition_scope": "Point Total"
+      },
+      "series_ticker": "KXNCAAFTOTAL",
+      "settlement_sources": [
+        {
+          "name": "ESPN",
+          "url": "https://www.espn.com"
+        },
+        {
+          "name": "Kalshi using information originating from the NCAA",
+          "url": "https://www.ncaa.com/sports/football/fbs"
+        }
+      ],
+      "strike_period": "",
+      "sub_title": "CCAR vs DEL (Sep 19)",
+      "title": "Coastal Carolina vs Delaware: Total Points"
+    }
+  ],
+  "milestones": []
+}

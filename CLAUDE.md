@@ -95,6 +95,25 @@ uv run cfb --help
 uv run pytest
 ```
 
+## Environment gotcha: iCloud hides .pth files
+
+This repo lives under `~/Desktop`, which iCloud Drive syncs. iCloud sets the macOS
+`UF_HIDDEN` flag on files it manages, and Python 3.12.3+/3.13 **skip hidden `.pth`
+files** in site-packages. uv installs the project as an editable `.pth`, so the package
+stops importing at random:
+
+```
+ModuleNotFoundError: No module named 'cfb_canes_analytics'
+```
+
+`uv sync` still reports success, which makes it look like a code bug. Verified
+2026-09-14 by reading `site.addpackage` and comparing `ls -lO` on the `.pth` files.
+Repair with `./scripts/unhide-venv.sh`; the durable fix is
+`export UV_PROJECT_ENVIRONMENT=.venv.nosync` (iCloud ignores `*.nosync` directories) or
+moving repos out of iCloud's reach. `mlb-canes-analytics` and `wc2026-quiniela` have the
+same flag set and are presumably affected too. Tests are immune: pytest's `pythonpath`
+is set to `src`.
+
 ## Where things live
 
 - Source: `src/cfb_canes_analytics/`
