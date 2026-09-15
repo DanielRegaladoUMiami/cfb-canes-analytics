@@ -52,8 +52,23 @@ capture.
 
 ```bash
 uv sync
-uv run cfb --help
+uv run cfb snapshot --weeks current   # capture open ladders on both venues
+uv run cfb board --min-oi 500         # upcoming games: implied total vs the book
+uv run cfb edges --threshold 0.03     # where the two exchanges disagree
+uv run cfb check                      # integrity: settlement, monotonicity, coverage
+uv run cfb harvest                    # rescue the retained settled ladders (slow)
 ```
+
+## What it found so far
+
+The two exchanges agree with each other and with the sportsbooks. Across 20 total lines
+quoted on both Kalshi and Polymarket the largest disagreement was 0.8 cents, and across
+43 games with a posted sportsbook total the Kalshi implied median sat within 1.3 points
+of the book. There is no line-shopping edge here; beating this market requires a model.
+Full write-up: `docs/experiments/2026-09-14-market-data-baseline.md`.
+
+Settlement was verified end to end: 5,407 strike settlements across 300 games agree with
+the ESPN box scores, with zero disagreements.
 
 ## Troubleshooting
 
