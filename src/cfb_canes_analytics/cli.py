@@ -114,6 +114,31 @@ def cmd_edges(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_board(args: argparse.Namespace) -> int:
+    rows = edges_mod.build_board(data_dir())
+    if not rows:
+        print("no rows — run 'cfb snapshot' first")
+        return 1
+    if args.min_oi:
+        rows = [r for r in rows if r.open_interest >= args.min_oi]
+    print(f"{len(rows)} upcoming games with a quoted Kalshi ladder")
+    print(
+        f"{'kickoff':<12} {'game':<44} {'median':>7} {'p25-p75':>12} "
+        f"{'book':>6} {'diff':>6} {'oi':>9}"
+    )
+    for r in rows[: args.limit]:
+        when = r.kickoff.strftime("%a %H:%MZ") if r.kickoff else "-"
+        book = f"{r.book_total:.1f}" if r.book_total is not None else "-"
+        diff = f"{r.diff:+.1f}" if r.diff is not None else "-"
+        span = f"{r.kalshi_p25:.0f}-{r.kalshi_p75:.0f}"
+        print(
+            f"{when:<12} {r.game[:44]:<44} {r.kalshi_median:>7.1f} {span:>12} "
+            f"{book:>6} {diff:>6} {r.open_interest:>9,.0f}"
+        )
+    print("\nmedian = total points where Kalshi's ladder says over and under are even.")
+    return 0
+
+
 def cmd_check(args: argparse.Namespace) -> int:
     results = checks_mod.run_all(data_dir())
     for result in results:
@@ -191,6 +216,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--min-oi", type=float, default=0.0, help="minimum Kalshi open interest")
     p.add_argument("--limit", type=int, default=25)
     p.set_defaults(func=cmd_edges)
+
+    p = sub.add_parser("board", help="upcoming games: Kalshi implied total vs the book")
+    p.add_argument("--min-oi", type=float, default=0.0)
+    p.add_argument("--limit", type=int, default=40)
+    p.set_defaults(func=cmd_board)
 
     p = sub.add_parser("check", help="integrity checks on the local data")
     p.set_defaults(func=cmd_check)

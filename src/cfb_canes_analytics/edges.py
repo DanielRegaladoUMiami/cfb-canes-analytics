@@ -161,5 +161,54 @@ def build_rows(base: Path, *, min_open_interest: float = 0.0) -> list[CrossVenue
     return rows
 
 
+@dataclass(frozen=True, slots=True)
+class BoardRow:
+    """One upcoming game: what Kalshi's ladder implies vs the sportsbook total."""
+
+    game: str
+    kickoff: datetime | None
+    kalshi_median: float
+    kalshi_p25: float
+    kalshi_p75: float
+    open_interest: float
+    book_total: float | None
+
+    @property
+    def diff(self) -> float | None:
+        """Kalshi's implied median minus the book's posted total, in points."""
+        if self.book_total is None:
+            return None
+        return self.kalshi_median - self.book_total
+
+
+def build_board(base: Path) -> list[BoardRow]:
+    """Upcoming games that have a genuinely quoted Kalshi ladder."""
+    games = read_or_none(raw_path("espn_games.parquet", base))
+    if games is None:
+        return []
+    ladders = kalshi_ladders(base)
+    rows: list[BoardRow] = []
+    for game in games.filter(~pl.col("completed")).to_dicts():
+        points = ladders.get(_abbr_key(game))
+        if not points:
+            continue
+        surv = implied_survival(points)
+        if not surv:
+            continue
+        rows.append(
+            BoardRow(
+                game=game["name"],
+                kickoff=game["kickoff"],
+                kalshi_median=implied_quantile(surv, 0.5),
+                kalshi_p25=implied_quantile(surv, 0.25),
+                kalshi_p75=implied_quantile(surv, 0.75),
+                open_interest=max((p.open_interest or 0.0) for p in points),
+                book_total=game["book_over_under"],
+            )
+        )
+    rows.sort(key=lambda r: (r.kickoff is None, r.kickoff))
+    return rows
+
+
 def disagreements(rows: list[CrossVenueRow], *, threshold: float = 0.05) -> list[CrossVenueRow]:
     return [r for r in rows if r.best_side is not None and r.best_edge >= threshold]
