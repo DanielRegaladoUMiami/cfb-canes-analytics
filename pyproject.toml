@@ -39,3 +39,6 @@ select = ["E", "F", "I", "B", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Belt and braces: import the package from src even if the editable .pth is not
+# honoured (macOS can flag venv .pth files UF_HIDDEN, which Python 3.13 skips).
+pythonpath = ["src", "."]

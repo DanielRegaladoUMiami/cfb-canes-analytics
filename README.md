@@ -55,6 +55,12 @@ uv sync
 uv run cfb --help
 ```
 
+## Troubleshooting
+
+`ModuleNotFoundError: No module named 'cfb_canes_analytics'` right after a successful
+`uv sync` means iCloud flagged the editable `.pth` file hidden and Python skipped it.
+Run `./scripts/unhide-venv.sh`. See `CLAUDE.md` for the durable fix.
+
 ## Status
 
 v0.1 — securing the data. See `ROADMAP.md`.

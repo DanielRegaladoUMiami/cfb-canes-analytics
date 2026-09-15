@@ -1,0 +1,175 @@
+{
+  "leagues": [
+    {
+      "id": "23",
+      "name": "NCAA - Football",
+      "abbreviation": "NCAAF",
+      "season": {
+        "year": 2026,
+        "type": {
+          "id": "2",
+          "type": 2,
+          "name": "Regular Season",
+          "abbreviation": "reg"
+        }
+      }
+    }
+  ],
+  "season": {
+    "type": 2,
+    "year": 2026
+  },
+  "week": {
+    "number": 2
+  },
+  "events": [
+    {
+      "id": "401858213",
+      "uid": "s:20~l:23~e:401858213",
+      "date": "2026-09-11T00:00Z",
+      "name": "Florida A&M Rattlers at Miami Hurricanes",
+      "shortName": "FAMU @ MIA",
+      "week": {
+        "number": 2
+      },
+      "season": {
+        "year": 2026,
+        "type": 2
+      },
+      "status": {
+        "type": {
+          "id": "3",
+          "name": "STATUS_FINAL",
+          "state": "post",
+          "completed": true,
+          "description": "Final",
+          "detail": "Final",
+          "shortDetail": "Final"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401858213",
+          "date": "2026-09-11T00:00Z",
+          "neutralSite": false,
+          "conferenceCompetition": false,
+          "venue": {
+            "id": "3948",
+            "fullName": "Hard Rock Stadium",
+            "indoor": false,
+            "address": {
+              "city": "Miami Gardens",
+              "state": "FL",
+              "country": "USA"
+            }
+          },
+          "competitors": [
+            {
+              "id": "2390",
+              "homeAway": "home",
+              "winner": true,
+              "score": "77",
+              "team": {
+                "id": "2390",
+                "abbreviation": "MIA",
+                "displayName": "Miami Hurricanes",
+                "location": "Miami",
+                "name": "Hurricanes",
+                "conferenceId": "1"
+              }
+            },
+            {
+              "id": "50",
+              "homeAway": "away",
+              "winner": false,
+              "score": "7",
+              "team": {
+                "id": "50",
+                "abbreviation": "FAMU",
+                "displayName": "Florida A&M Rattlers",
+                "location": "Florida A&M",
+                "name": "Rattlers",
+                "conferenceId": "31"
+              }
+            }
+          ],
+          "odds": []
+        }
+      ]
+    },
+    {
+      "id": "401856682",
+      "uid": "s:20~l:23~e:401856682",
+      "date": "2026-09-12T23:30Z",
+      "name": "Ohio State Buckeyes at Texas Longhorns",
+      "shortName": "OSU @ TEX",
+      "week": {
+        "number": 2
+      },
+      "season": {
+        "year": 2026,
+        "type": 2
+      },
+      "status": {
+        "type": {
+          "id": "3",
+          "name": "STATUS_FINAL",
+          "state": "post",
+          "completed": true,
+          "description": "Final",
+          "detail": "Final",
+          "shortDetail": "Final"
+        }
+      },
+      "competitions": [
+        {
+          "id": "401856682",
+          "date": "2026-09-12T23:30Z",
+          "neutralSite": false,
+          "conferenceCompetition": false,
+          "venue": {
+            "id": "3910",
+            "fullName": "DKR-Texas Memorial Stadium",
+            "indoor": false,
+            "address": {
+              "city": "Austin",
+              "state": "TX",
+              "country": "USA"
+            }
+          },
+          "competitors": [
+            {
+              "id": "251",
+              "homeAway": "home",
+              "winner": true,
+              "score": "24",
+              "team": {
+                "id": "251",
+                "abbreviation": "TEX",
+                "displayName": "Texas Longhorns",
+                "location": "Texas",
+                "name": "Longhorns",
+                "conferenceId": "8"
+              }
+            },
+            {
+              "id": "194",
+              "homeAway": "away",
+              "winner": false,
+              "score": "23",
+              "team": {
+                "id": "194",
+                "abbreviation": "OSU",
+                "displayName": "Ohio State Buckeyes",
+                "location": "Ohio State",
+                "name": "Buckeyes",
+                "conferenceId": "5"
+              }
+            }
+          ],
+          "odds": []
+        }
+      ]
+    }
+  ]
+}
